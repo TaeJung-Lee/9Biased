@@ -1,12 +1,21 @@
 import json
+import re
+import os
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 MODEL = "claude-sonnet-4-20250514"
 
 def call_claude(prompt, system=None, max_tokens=4096):
     """Make a call to the Claude API."""
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": os.environ.get("ANTHROPIC_API_KEY", ""),
+        "anthropic-version": "2023-06-01"
+    }
     body = {
         "model": MODEL,
         "max_tokens": max_tokens,
