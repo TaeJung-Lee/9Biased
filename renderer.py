@@ -33,59 +33,71 @@ def score_to_color(score):
         return "#DC2626"
 
 def render_quadrant_chart(article_scores):
-    """Render a visual 2x2 quadrant chart as an HTML table."""
-    left_analytical, left_opinion, right_analytical, right_opinion, center_items = [], [], [], [], []
+    """Render a visual 3-column (left | center | right) x 2-row (analytical | opinion) chart."""
+    left_analytical, left_opinion = [], []
+    center_analytical, center_opinion = [], []
+    right_analytical, right_opinion = [], []
 
     for a in article_scores:
         bias = a.get("source_bias", "center")
         score = a.get("opinion_vs_analysis_score", 0.5)
         name = a.get("source_name", "Unknown")
-        label = f'<span style="font-size:11px;font-weight:600;color:#1F2937">{name}</span><br><span style="font-size:10px;color:#6B7280">{score_to_label(score)}</span>'
+        label = (
+            f'<span style="font-size:11px;font-weight:600;color:#1F2937">{name}</span>'
+            f'<br><span style="font-size:10px;color:#6B7280">{score_to_label(score)}</span>'
+        )
 
-        if bias == "left" and score >= 0.5:
-            left_analytical.append(label)
-        elif bias == "left" and score < 0.5:
-            left_opinion.append(label)
-        elif bias == "right" and score >= 0.5:
-            right_analytical.append(label)
-        elif bias == "right" and score < 0.5:
-            right_opinion.append(label)
+        if bias == "left":
+            (left_analytical if score >= 0.5 else left_opinion).append(label)
+        elif bias == "right":
+            (right_analytical if score >= 0.5 else right_opinion).append(label)
         else:
-            center_items.append(label)
+            (center_analytical if score >= 0.5 else center_opinion).append(label)
 
     def cell(items, bg, border):
-        content = "<br><br>".join(items) if items else '<span style="color:#9CA3AF;font-size:11px">No sources</span>'
-        return f'<td style="width:50%;padding:16px;background:{bg};border:{border};vertical-align:top;border-radius:4px">{content}</td>'
+        content = "<br><br>".join(items) if items else '<span style="color:#9CA3AF;font-size:11px">—</span>'
+        return (
+            f'<td style="padding:14px;background:{bg};border:{border};'
+            f'vertical-align:top;border-radius:4px">{content}</td>'
+        )
 
     html = f'''
-    <table width="100%" cellpadding="0" cellspacing="6" style="border-collapse:separate;border-spacing:6px;margin:16px 0">
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0">
       <tr>
-        <td colspan="2" style="text-align:center;padding-bottom:4px">
+        <td colspan="5" style="text-align:center;padding-bottom:6px">
           <span style="font-size:11px;font-weight:700;color:#059669;letter-spacing:0.08em;text-transform:uppercase">▲ Analytical / Factual</span>
         </td>
       </tr>
       <tr>
-        <td style="text-align:center;padding-right:4px;width:20px">
-          <span style="font-size:11px;font-weight:700;color:#4A90D9;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:0.08em;text-transform:uppercase">◀ Left</span>
+        <td width="32%" style="text-align:center;padding-bottom:4px">
+          <span style="font-size:11px;font-weight:700;color:#4A90D9;letter-spacing:0.06em;text-transform:uppercase">◀ Left</span>
         </td>
-        <td style="width:100%">
-          <table width="100%" cellpadding="0" cellspacing="6" style="border-collapse:separate;border-spacing:6px">
-            <tr>
-              {cell(left_analytical, "#F0F7FF", "2px solid #4A90D9")}
-              {cell(right_analytical, "#FFF5F5", "2px solid #E05C5C")}
-            </tr>
-            <tr>
-              {cell(left_opinion, "#E8F2FF", "2px dashed #4A90D9")}
-              {cell(right_opinion, "#FFEDED", "2px dashed #E05C5C")}
-            </tr>
-          </table>
+        <td width="2%"></td>
+        <td width="32%" style="text-align:center;padding-bottom:4px">
+          <span style="font-size:11px;font-weight:700;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase">Center</span>
         </td>
-        <td style="text-align:center;padding-left:4px;width:20px">
-          <span style="font-size:11px;font-weight:700;color:#E05C5C;writing-mode:vertical-rl;letter-spacing:0.08em;text-transform:uppercase">Right ▶</span>
+        <td width="2%"></td>
+        <td width="32%" style="text-align:center;padding-bottom:4px">
+          <span style="font-size:11px;font-weight:700;color:#E05C5C;letter-spacing:0.06em;text-transform:uppercase">Right ▶</span>
         </td>
       </tr>
       <tr>
-        <td colspan="2" style="text-align:center;padding-top:4px">
+        {cell(left_analytical,   "#F0F7FF", "2px solid #4A90D9")}
+        <td></td>
+        {cell(center_analytical, "#F3F4F6", "2px solid #6B7280")}
+        <td></td>
+        {cell(right_analytical,  "#FFF5F5", "2px solid #E05C5C")}
+      </tr>
+      <tr><td colspan="5" style="height:6px"></td></tr>
+      <tr>
+        {cell(left_opinion,   "#E8F2FF", "2px dashed #4A90D9")}
+        <td></td>
+        {cell(center_opinion, "#EBEBEC", "2px dashed #6B7280")}
+        <td></td>
+        {cell(right_opinion,  "#FFEDED", "2px dashed #E05C5C")}
+      </tr>
+      <tr>
+        <td colspan="5" style="text-align:center;padding-top:6px">
           <span style="font-size:11px;font-weight:700;color:#DC2626;letter-spacing:0.08em;text-transform:uppercase">▼ Opinion / Editorial</span>
         </td>
       </tr>
@@ -97,6 +109,10 @@ def render_story_block(story_num, story, analysis):
     article_scores = analysis.get("article_scores", [])
     factual_core = analysis.get("factual_core", [])
     framing_contrast = analysis.get("framing_contrast", "")
+
+    # Sort: center first, then left, then right
+    bias_order = {"center": 0, "left": 1, "right": 2}
+    article_scores = sorted(article_scores, key=lambda a: bias_order.get(a.get("source_bias", "center"), 1))
 
     # Article pills
     article_pills = ""
