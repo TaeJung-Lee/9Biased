@@ -181,7 +181,7 @@ MIT License — free to use, modify, and distribute.
 
 ---
 
-*Built as a capstone project. 9 Biased is not affiliated with any news organization. Bias classifications reflect independent media research and AI analysis — always read primary sources.*
+*Built as a capstone project. 9 Biased is not affiliated with any news organization. Bias classifications reflect independent media research and AI analysis*
 
 <img width="1185" height="571" alt="Screenshot 2026-04-01 at 4 18 12 PM" src="https://github.com/user-attachments/assets/5f514dda-f277-466b-a14e-0176992bbd60" />
 <img width="627" height="568" alt="Screenshot 2026-04-01 at 4 18 41 PM" src="https://github.com/user-attachments/assets/45d92085-0ea9-4b77-b89c-a949592adfa1" />
