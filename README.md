@@ -1,13 +1,13 @@
-# 9 (Nein) Biased
+# 9 Biased
 ### See All Sides. Know the Facts.
 
-An AI-powered daily newsletter that maps political bias, analytical depth, and shared facts across news sources — helping readers cut through spin and understand what's actually happening.
+AI powered daily newsletter that maps political bias, analytical depth, and shared facts across news sources, helping readers cut through spin and understand what's actually happening.
 
 ---
 
 ## What It Does
 
-Every day, 9 (Nein) Biased automatically:
+Every day, 9Biased automatically:
 
 1. **Fetches** articles from 20+ news outlets spanning left, center, and right-leaning sources
 2. **Clusters** them into the top 3 stories of the day using the Claude API
